@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part Details</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-image: url('/static/images/repairshop.jpeg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            color: #333;
+        }
+
+        .part-item {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .part-item img {
+            max-width: 100%;
+            max-height: 300px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="part-item">
+        <h1>{{ part[1] }} Details</h1>
+
+        <img src="{{ url_for('static', filename='uploads/' + part[5]) }}" alt="{{ part[1] }}">
+        <p>Part Number: {{ part[2] }}</p>
+        <p>Description: {{ part[4] }}</p>
+        <p>Price: {{ part[8] }}</p>
+
+        <form id="paymentForm" action="/store_data" method="post">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email">
+
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <input type="hidden" id="payment_reference" name="payment_reference" value="">
+
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" required oninput="updateTotalAmount()">
+
+            <!-- Display the total amount dynamically -->
+            <p>Total Amount: <span id="totalAmount">{{ part[8] }}</span></p>
+
+            <!-- Change the button type to "button" and add an ID -->
+            <button type="submit" id="purchaseButton" onclick="payWithPaystack()">Purchase</button>
+        </form>
+    </div>
+
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+<script>
+    var paymentReference;
+
+function updateTotalAmount() {
+    // Fetch the price of the item and quantity
+    var price = parseInt("{{ part[8] }}");
+    var quantity = parseInt(document.getElementById('quantity').value);
+
+    // Calculate the total amount
+    var totalAmount = price * quantity;
+
+    // Display the total amount dynamically
+    document.getElementById('totalAmount').innerText = totalAmount;
+}
+
+document.getElementById('paymentForm').addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    var email = document.getElementById('email').value;
+    var name = document.getElementById('name').value;
+    var quantity = document.getElementById('quantity').value;
+
+    // Check if the email is empty before proceeding
+    if (email.trim() === '') {
+        alert('Please enter a valid email address.');
+        return;
+    }
+
+    paymentReference = 'REF' + Math.floor((Math.random() * 1000000000) + 1);
+    document.getElementById('payment_reference').value = paymentReference;
+
+    // Fetch the total amount dynamically
+    var totalAmount = parseInt(document.getElementById('totalAmount').innerText);
+
+    // Log the details for debugging
+    console.log('Email:', email);
+    console.log('Name:', name);
+    console.log('Quantity:', quantity);
+    console.log('Payment Reference:', paymentReference);
+    console.log('Total Amount:', totalAmount);
+
+    // Ensure Paystack script is fully loaded before initiating the payment
+    loadPaystackScript(function () {
+        payWithPaystack(email, name, totalAmount);
+    });
+});
+
+function loadPaystackScript(callback) {
+    // Check if Paystack is already loaded
+    if (window.PaystackPop) {
+        callback();
+    } else {
+        // Load Paystack script dynamically
+        var script = document.createElement('script');
+        script.src = 'https://js.paystack.co/v1/inline.js';
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+}
+
+function payWithPaystack(email, name, totalAmount) {
+    var handler = PaystackPop.setup({
+        key: 'pk_test_9c31d1a55bf8ef34d2fa9283df234b3fa0d8a32d',
+        email: email,
+        amount: totalAmount * 100, // Amount is in kobo
+        ref: paymentReference,
+        currency: 'KES',
+        onClose: function () {
+            alert('Window closed.');
+        },
+        callback: function (response) {
+            if (response.status === 'success') {
+                submitBookingDetails();
+            } else {
+                alert('Payment failed: ' + response.message);
+            }
+        }
+    });
+    handler.openIframe();
+}
+        function submitBookingDetails() {
+            var xhr = new XMLHttpRequest();
+            var url = '/store_data';
+            var params = 'email=' + encodeURIComponent(document.getElementById('email').value)
+                + '&name=' + encodeURIComponent(document.getElementById('name').value)
+                + '&payment_reference=' + encodeURIComponent(paymentReference)
+                + '&totalAmount=' + encodeURIComponent(document.getElementById('totalAmount').innerText)
+                + '&quantity=' + encodeURIComponent(document.getElementById('quantity').value);
+
+            xhr.open('POST', url, true);
+            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.status === 'success') {
+                        showSuccessAlert();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Payment',
+                            text: response.message,
+                            confirmButtonColor: '#d33',
+                        });
+                    }
+                }
+            };
+
+            xhr.send(params);
+        }
+
+        function showSuccessAlert() {
+            // You can customize this function to show a success message as needed
+            alert('Payment successful! Thank you for your purchase.');
+        }
+
+
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup Success Page</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #4CAF50;
+        }
+
+        p {
+            margin-top: 10px;
+            font-size: 18px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        a {
+            color: #2196F3;
+            text-decoration: none;
+            font-weight: bold;
+            display: block;
+            margin-top: 20px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Signup Successful!</h1>
+    <p>Thank you for signing up, {{ user_name }}. You have successfully registered.</p>
+    <p><a href="/">Go back to Home</a></p>
+</body>
+</html>

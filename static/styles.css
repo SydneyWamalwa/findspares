@@ -1,0 +1,103 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    text-align: center;
+    padding: 20px;
+    color: black;
+    position: absolute;
+    top: 10;
+    left: 0;
+    right: 0;
+}
+
+section {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url("/static/images/garage.jpeg") center/cover no-repeat;
+    margin-bottom: 0; /* Remove margin-bottom to make the footer touch the image */
+}
+
+input[type="text"] {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 20px 0 0 20px;
+    border: none;
+    width: 300px;
+}
+
+button {
+    padding: 10px 10px; /* Adjusted padding */
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 0 20px 20px 0;
+    cursor: pointer;
+}
+
+button img {
+    height: 15px; /* Match the height of the button */
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background: #333;
+}
+
+nav img {
+    height: 80px;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+nav li {
+    margin-right: 15px;
+}
+
+nav button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+nav button:hover {
+    background-color: #45a049;
+}
+
+#button1 {
+    background-color: #008CBA; /* Different color for the "Sign Up" button */
+}
+
+#button2 {
+    background-color: #f44336; /* Different color for the "Log Out" button */
+}
+
+footer {
+    text-align: center;
+    background-color: #333;
+    color: white;
+    position: relative; /* Change 'absolute' to 'fixed' */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+}

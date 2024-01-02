@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Orders</title>
+    <!-- Add any additional styles or scripts if needed -->
+</head>
+<body>
+    <section id="track-orders">
+        <div class="order-container">
+            <h2>Track Orders</h2>
+            <ul id="orders-list"></ul>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('/get-orders')
+                .then(response => response.json())
+                .then(orders => {
+                    const ordersList = document.getElementById('orders-list');
+                    orders.forEach(order => {
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `
+                    <h3>Order #${order[0]}</h3>
+                    <img src="/static/uploads/${order[3]}" alt="${order[1]}" width=200px>
+                    <p>Part Name: ${order[1]}</p>
+                    <p>Part Number: ${order[2]}</p>
+                    <p>Quantity: ${order[4]}</p> <!-- Assuming quantity is at index 4 in the order object -->
+                    <p>Status: ${order[5]}</p> <!-- Assuming status is at index 5 in the order object -->
+                    <p>Customer Name: ${order[6]}</p>
+                    <p>Customer Email: ${order[7]}</p>
+                    <p>Order Date: ${order[8]}</p>
+                    <p>Payment Reference: ${order[9]}</p>
+                    <p>Payment Amount: ${order[10]}</p>
+                    <p>Payment Status: ${order[11]}</p>
+                    <button onclick="closeOrder(${order[0]})">Close Order</button>
+                    <hr>
+                `;
+                        ordersList.appendChild(listItem);
+                    });
+                });
+        });
+
+        function closeOrder(orderId) {
+            fetch(`/close-order/${orderId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        alert('Order closed successfully');
+                        // Refresh the orders list or perform any necessary updates
+                        location.reload();
+                    }
+                });
+        }
+    </script>
+</body>
+</html>

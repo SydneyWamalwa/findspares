@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload New Part</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .upload-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .upload-form label {
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .upload-form input,
+        .upload-form textarea {
+            padding: 10px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .upload-form button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <form class="upload-form" action="/upload-part" method="post" enctype="multipart/form-data">
+            <label for="part_name">Part Name:</label>
+            <input type="text" id="part_name" name="part_name" required>
+
+            <label for="part_number">Part Number:</label>
+            <input type="text" id="part_number" name="part_number" required>
+
+            <label for="part_image">Part Image:</label>
+            <input type="file" id="part_image" name="part_image" accept="image/*" required>
+
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="4" required></textarea>
+
+            <label for="thumbnail">Thumbnail:</label>
+            <input type="file" id="thumbnail" name="thumbnail" accept="image/*" required>
+
+            <label for="img1">Image 1:</label>
+            <input type="file" id="img1" name="img1" accept="image/*" required>
+
+            <label for="img2">Image 2:</label>
+            <input type="file" id="img2" name="img2" accept="image/*" required>
+
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price" required>
+
+            <button type="submit">Upload Part</button>
+        </form>
+    </div>
+</body>
+</html>

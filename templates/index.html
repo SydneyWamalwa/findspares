@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FindMySpares.com</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+
+    <nav>
+        <img src="/static/images/Findmyspares.com.png" alt="Navbar Logo">
+        <ul>
+            <li><button type="button" id="button" onclick="window.location.href='/Models';">Search by Model</button></li>
+            <li><button type="button" id="button" onclick="window.location.href='/Login';">Log In</button></li>
+            <li><button type="button" id="button1" onclick="window.location.href='/Signup';">Sign Up</button></li>
+            <li><button type="button" id="button2" onclick="window.location.href='/logout';">Log Out</button></li>
+        </ul>
+    </nav>
+
+    <header>
+        <h1>FindMySpares.com</h1>
+        <p>Where Spares are our business</p>
+    </header>
+
+    <section>
+        <div>
+            <form action="{{ url_for('search_model') }}" method="post">
+                <input type="text" name="search_query" placeholder="Enter part number/Car Model">
+                <button type="submit"><img src="/static/images/search.png" alt="Search"></button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2023 FindMySpares.com. All rights reserved.</p>
+        <p>Terms and conditions apply</p>
+    </footer>
+</body>
+</html>

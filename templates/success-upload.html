@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Success</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        .success-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .success-message {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .success-details {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .back-to-home,
+        .add-more-parts {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-message">Upload Successful!</div>
+        <div class="success-details">
+            <p>Your part has been successfully uploaded.</p>
+            <!-- You can display additional details or instructions here -->
+        </div>
+        <a href="/upload-part" class="add-more-parts">Add More Parts</a>
+        <a href="/" class="back-to-home">Go back to Home</a>
+    </div>
+</body>
+</html>

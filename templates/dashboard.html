@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller's Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #555;
+            padding: 10px;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        nav li {
+            margin-right: 15px;
+        }
+
+        section {
+            padding: 20px;
+        }
+
+        .order-container, .upload-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .order-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .order-item {
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        #view-all-orders {
+            background-color: #555;
+            color: white;
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .upload-form {
+            max-width: 400px;
+            margin: 20px auto;
+        }
+
+        .upload-form label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .upload-form input,
+        .upload-form textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+
+        .upload-form button {
+            background-color: #555;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Seller's Dashboard</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><button type="button" id="button" onclick="window.location.href='/track-order';">Track Orders</button></li>
+            <li><button type="button" id="button" onclick="window.location.href='/upload-part';">Upload New Part</button></li>
+        </ul>
+    </nav>
+
+    <section id="track-orders">
+        <div class="order-container">
+            <h2>Track Orders</h2>
+            <table id="order-table">
+                <thead>
+                    <tr>
+                        <th>Order Number</th>
+                        <th>Part Name</th>
+                    </tr>
+                </thead>
+                <tbody id="order-list">
+                    <!-- Order items will be dynamically added here -->
+                </tbody>
+            </table>
+            <a href="#" id="view-all-orders">View All Orders</a>
+        </div>
+    </section>
+
+
+    <section id="upload-part">
+        <div class="upload-container">
+            <h2>Upload New Part</h2>
+            <form class="upload-form" action="/upload-part" method="post" enctype="multipart/form-data">
+                <label for="part_name">Part Name:</label>
+                <input type="text" id="part_name" name="part_name" required>
+
+                <label for="part_number">Part Number:</label>
+                <input type="text" id="part_number" name="part_number" required>
+
+                <label for="part_image">Part Image:</label>
+                <input type="file" id="part_image" name="part_image" accept="image/*" required>
+
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" rows="4" required></textarea>
+
+                <label for="thumbnail">Thumbnail:</label>
+                <input type="file" id="thumbnail" name="thumbnail" accept="image/*" required>
+
+                <label for="img1">Image 1:</label>
+                <input type="file" id="img1" name="img1" accept="image/*" required>
+
+                <label for="img2">Image 2:</label>
+                <input type="file" id="img2" name="img2" accept="image/*" required>
+
+                <label for="price">Price:</label>
+                <input type="number" id="price" name="price" required>
+
+                <button type="submit">Upload Part</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2023 FindMySpares.com. All rights reserved.</p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    // Function to fetch and display orders
+    function fetchOrders() {
+        $.ajax({
+            url: '/get-orders', // Change this URL to your actual endpoint for fetching orders
+            method: 'GET',
+            success: function (data) {
+                // Clear existing orders
+                $('#order-list').empty();
+
+                // Iterate through orders and append rows to the table
+                for (var i = 0; i < data.length; i++) {
+                    var order = data[i];
+                    var orderNumber = order[0];
+                    var partName = order[1];
+
+                    // Append a new row to the table
+                    $('#order-list').append(
+                        '<tr>' +
+                        '<td>' + orderNumber + '</td>' +
+                        '<td>' + partName + '</td>' +
+                        '</tr>'
+                    );
+                }
+            },
+            error: function (error) {
+                console.error('Error fetching orders:', error);
+            }
+        });
+    }
+
+    // Fetch orders when the page loads
+    $(document).ready(function () {
+        fetchOrders();
+    });
+
+    // Optionally, you can add an event listener to the "View All Orders" link to refresh the orders
+    $('#view-all-orders').click(function (e) {
+        e.preventDefault();
+        fetchOrders();
+    });
+</script>
+
+</body>
+</html>
