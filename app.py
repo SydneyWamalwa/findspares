@@ -64,7 +64,6 @@ try:
         order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         payment_reference TEXT,
         payment_amount INTEGER,
-        payment_status TEXT DEFAULT 'Pending',
         FOREIGN KEY (part_id) REFERENCES Parts(id)
     )
 ''')
@@ -219,7 +218,7 @@ def get_orders():
         cursor.execute('''
             SELECT Orders.id, Parts.part_name, Parts.part_number, Parts.part_image, Orders.quantity, Orders.status,
                    Orders.customer_name, Orders.customer_email, Orders.order_date,
-                   Orders.payment_reference, Orders.payment_amount, Orders.payment_status
+                   Orders.payment_reference, Orders.payment_amount
             FROM Orders
             JOIN Parts ON Orders.part_id = Parts.id
             ORDER BY Orders.order_date DESC
@@ -370,38 +369,6 @@ def part_details(part_id):
         return render_template('part-details.html', part=part)
     else:
         return redirect(url_for('search_model'))
-
-
-# Function to update payment status in the database
-def update_payment_status(payment_reference, status):
-    with sqlite3.connect('spares.db') as connection:
-        cursor = connection.cursor()
-        cursor.execute('''
-            UPDATE Orders
-            SET payment_status = ?
-            WHERE payment_reference = ?
-        ''', (status, payment_reference))
-        connection.commit()
-
-def get_transaction_status(payment_reference):
-    # Replace 'SECRET_KEY' with your actual Paystack secret key
-    secret_key = 'sk_test_9cf482a8652d6ed44e63efe3f8d465d302570c22'
-
-    # Construct the Paystack API endpoint for verifying transactions
-    api_url = f'https://api.paystack.co/transaction/verify/{payment_reference}'
-
-    # Set the authorization header with the secret key
-    headers = {'Authorization': f'Bearer {secret_key}'}
-
-    # Make a GET request to the Paystack API
-    response = requests.get(api_url, headers=headers)
-
-    # Parse the response JSON and extract the transaction status
-    response_data = response.json()
-    transaction_status = response_data.get('status')
-
-    return transaction_status
-
 
 
 @app.route('/store_data', methods=['POST'])
