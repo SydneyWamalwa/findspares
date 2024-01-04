@@ -413,6 +413,12 @@ def store_data():
             amount = request.form.get('totalAmount')
             payment_reference = request.form.get('payment_reference')
 
+
+            if not email or not validate_email(email):
+                return jsonify({'status': 'error', 'message': 'Invalid email address'})
+
+# Proceed with Paystack payment
+
             # Fetch the corresponding part details based on your logic
             with sqlite3.connect('spares.db') as connection:
                 cursor = connection.cursor()

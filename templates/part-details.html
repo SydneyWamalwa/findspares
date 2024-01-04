@@ -98,129 +98,91 @@
             <p>Total Amount: <span id="totalAmount">{{ part[8] }}</span></p>
 
             <!-- Change the button type to "button" and add an ID -->
-            <button type="submit" id="purchaseButton" onclick="payWithPaystack()">Purchase</button>
+            <button type="button" id="purchaseButton">Purchase</button>
         </form>
     </div>
 
     <script src="https://js.paystack.co/v1/inline.js"></script>
-<script>
-    var paymentReference;
+    <script>
+        var paymentReference;
 
-function updateTotalAmount() {
-    // Fetch the price of the item and quantity
-    var price = parseInt("{{ part[8] }}");
-    var quantity = parseInt(document.getElementById('quantity').value);
+        function updateTotalAmount() {
+            // Fetch the price of the item and quantity
+            var price = parseInt("{{ part[8] }}");
+            var quantity = parseInt(document.getElementById('quantity').value);
 
-    // Calculate the total amount
-    var totalAmount = price * quantity;
+            // Calculate the total amount
+            var totalAmount = price * quantity;
 
-    // Display the total amount dynamically
-    document.getElementById('totalAmount').innerText = totalAmount;
-}
+            // Display the total amount dynamically
+            document.getElementById('totalAmount').innerText = totalAmount;
+        }
 
-document.getElementById('paymentForm').addEventListener("submit", function (event) {
-    event.preventDefault();
+        document.getElementById('purchaseButton').addEventListener("click", function () {
+            var email = document.getElementById('email').value;
+            var name = document.getElementById('name').value;
+            var quantity = document.getElementById('quantity').value;
 
-    var email = document.getElementById('email').value;
-    var name = document.getElementById('name').value;
-    var quantity = document.getElementById('quantity').value;
+            // Check if the email is empty before proceeding
+            if (email.trim() === '') {
+                alert('Please enter a valid email address.');
+                return;
+            }
 
-    // Check if the email is empty before proceeding
-    if (email.trim() === '') {
-        alert('Please enter a valid email address.');
-        return;
-    }
+            paymentReference = 'REF' + Math.floor((Math.random() * 1000000000) + 1);
+            document.getElementById('payment_reference').value = paymentReference;
 
-    paymentReference = 'REF' + Math.floor((Math.random() * 1000000000) + 1);
-    document.getElementById('payment_reference').value = paymentReference;
+            // Fetch the total amount dynamically
+            var totalAmount = parseInt(document.getElementById('totalAmount').innerText);
 
-    // Fetch the total amount dynamically
-    var totalAmount = parseInt(document.getElementById('totalAmount').innerText);
+            // Log the details for debugging
+            console.log('Email:', email);
+            console.log('Name:', name);
+            console.log('Quantity:', quantity);
+            console.log('Payment Reference:', paymentReference);
+            console.log('Total Amount:', totalAmount);
 
-    // Log the details for debugging
-    console.log('Email:', email);
-    console.log('Name:', name);
-    console.log('Quantity:', quantity);
-    console.log('Payment Reference:', paymentReference);
-    console.log('Total Amount:', totalAmount);
+            // Ensure Paystack script is fully loaded before initiating the payment
+            loadPaystackScript(function () {
+                payWithPaystack(email, name, totalAmount);
+            });
+        });
 
-    // Ensure Paystack script is fully loaded before initiating the payment
-    loadPaystackScript(function () {
-        payWithPaystack(email, name, totalAmount);
-    });
-});
-
-function loadPaystackScript(callback) {
-    // Check if Paystack is already loaded
-    if (window.PaystackPop) {
-        callback();
-    } else {
-        // Load Paystack script dynamically
-        var script = document.createElement('script');
-        script.src = 'https://js.paystack.co/v1/inline.js';
-        script.onload = callback;
-        document.head.appendChild(script);
-    }
-}
-
-function payWithPaystack(email, name, totalAmount) {
-    var handler = PaystackPop.setup({
-        key: 'pk_test_9c31d1a55bf8ef34d2fa9283df234b3fa0d8a32d',
-        email: email,
-        amount: totalAmount * 100, // Amount is in kobo
-        ref: paymentReference,
-        currency: 'KES',
-        onClose: function () {
-            alert('Window closed.');
-        },
-        callback: function (response) {
-            if (response.status === 'success') {
-                submitBookingDetails();
+        function loadPaystackScript(callback) {
+            // Check if Paystack is already loaded
+            if (window.PaystackPop) {
+                callback();
             } else {
-                alert('Payment failed: ' + response.message);
+                // Load Paystack script dynamically
+                var script = document.createElement('script');
+                script.src = 'https://js.paystack.co/v1/inline.js';
+                script.onload = callback;
+                document.head.appendChild(script);
             }
         }
-    });
-    handler.openIframe();
-}
-        function submitBookingDetails() {
-            var xhr = new XMLHttpRequest();
-            var url = '/store_data';
-            var params = 'email=' + encodeURIComponent(document.getElementById('email').value)
-                + '&name=' + encodeURIComponent(document.getElementById('name').value)
-                + '&payment_reference=' + encodeURIComponent(paymentReference)
-                + '&totalAmount=' + encodeURIComponent(document.getElementById('totalAmount').innerText)
-                + '&quantity=' + encodeURIComponent(document.getElementById('quantity').value);
 
-            xhr.open('POST', url, true);
-            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    var response = JSON.parse(xhr.responseText);
+        function payWithPaystack(email, name, totalAmount) {
+            var handler = PaystackPop.setup({
+                key: 'pk_test_9c31d1a55bf8ef34d2fa9283df234b3fa0d8a32d',
+                email: email,
+                amount: totalAmount * 100, // Amount is in kobo
+                ref: paymentReference,
+                currency: 'KES',
+                onClose: function () {
+                    alert('Window closed.');
+                },
+                callback: function (response) {
                     if (response.status === 'success') {
-                        showSuccessAlert();
+                        submitBookingDetails();
                     } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Payment',
-                            text: response.message,
-                            confirmButtonColor: '#d33',
-                        });
+                        alert('Payment failed: ' + response.message);
                     }
                 }
-            };
-
-            xhr.send(params);
+            });
+            handler.openIframe();
         }
 
-        function showSuccessAlert() {
-            // You can customize this function to show a success message as needed
-            alert('Payment successful! Thank you for your purchase.');
-        }
-
-
+        // The rest of your script remains unchanged
     </script>
 </body>
 </html>
-
