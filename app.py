@@ -48,16 +48,10 @@ try:
                 thumbnail BLOB NOT NULL,
                 img1 BLOB NOT NULL,
                 img2 BLOB NOT NULL,
-                Price INTEGER NOT NULL,
-                vehicle_model_id INTEGER, -- Foreign key referencing the Model table
-                FOREIGN KEY (vehicle_model_id) REFERENCES Model(id)
+                Price INTEGER NOT NULL
             )
         ''')
-        cursor.execute('''CREATE TABLE IF NOT EXISTS Model(
-                       id INTEGER PRIMARY KEY AUTOINCREMENT,
-                       Name TEXT NOT NULL,
-                       Logo BLOB NOT NULL
-        )''')
+
 
         cursor.execute('''
     CREATE TABLE IF NOT EXISTS Orders (
@@ -292,6 +286,54 @@ def Models():
 @app.route('/toyota.html')
 def Toyota():
     return render_template('toyota.html')
+
+@app.route('/nissan.html')
+def Nissan():
+    return render_template('nissan.html')
+
+@app.route('/merc.html')
+def Merc():
+    return render_template('merc.html')
+
+@app.route('/Peaugot.html')
+def Peaugot():
+    return render_template('Peaugot.html')
+
+@app.route('/Audi.html')
+def Audi():
+    return render_template('Audi.html')
+
+@app.route('/VW.html')
+def VW():
+    return render_template('VW.html')
+
+@app.route('/BMW.html')
+def BMW():
+    return render_template('BMW.html')
+
+@app.route('/Porsche.html')
+def Porsche():
+    return render_template('Porsche.html')
+
+@app.route('/Subaru.html')
+def Subaru():
+    return render_template('Subaru.html')
+
+@app.route('/Honda.html')
+def Honda():
+    return render_template('Honda.html')
+
+@app.route('/Suzuki.html')
+def Suzuki():
+    return render_template('Suzuki.html')
+
+@app.route('/Mazda.html')
+def Mazda():
+    return render_template('Mazda.html')
+
+@app.route('/Mitsubishi.html')
+def Mitsubishi():
+    return render_template('Mitsubishi.html')
 
 
 @app.route('/Search_Model', methods=['GET', 'POST'])
