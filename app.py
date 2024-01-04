@@ -358,6 +358,8 @@ def search_model():
 
 @app.route('/part-details/<int:part_id>')
 def part_details(part_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login', next=request.url))
     # Retrieve part details based on part_id
     with sqlite3.connect('spares.db') as connection:
         cursor = connection.cursor()
@@ -414,8 +416,6 @@ def store_data():
             payment_reference = request.form.get('payment_reference')
 
 
-            if not email or not validate_email(email):
-                return jsonify({'status': 'error', 'message': 'Invalid email address'})
 
 # Proceed with Paystack payment
 
