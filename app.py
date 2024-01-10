@@ -6,7 +6,7 @@ from flask_bcrypt import Bcrypt
 import sqlite3
 import os
 import logging
-import requests
+
 
 secret_key = os.urandom(24)
 app = Flask(__name__, template_folder='templates')
