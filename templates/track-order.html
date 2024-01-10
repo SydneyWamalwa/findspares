@@ -34,11 +34,15 @@
                     <p>Order Date: ${order[8]}</p>
                     <p>Payment Reference: ${order[9]}</p>
                     <p>Payment Amount: ${order[10]}</p>
-                    <p>Payment Status: ${order[11]}</p>
+                    <p>Delivery Option: ${order[11]}</p>
+                    <p>Delivery Address: ${order[12]}</p>
+                    <p>Delivery City: ${order[13]}</p>
+                    <p>Delivery Zip Code: ${order[14]}</p>
                     <button onclick="closeOrder(${order[0]})">Close Order</button>
                     <hr>
                 `;
                         ordersList.appendChild(listItem);
+                        console.log('Order Object:', order);
                     });
                 });
         });
