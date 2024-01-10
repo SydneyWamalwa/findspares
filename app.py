@@ -14,8 +14,16 @@ app.secret_key = secret_key
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 bcrypt = Bcrypt(app)
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587  # Use the appropriate port for your mail server
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'sydneywamalwa@gmail.com'
+app.config['MAIL_PASSWORD'] = 'nnzw bvtc xorw komb'
+app.config['MAIL_DEFAULT_SENDER'] = 'sydneywamalwa@gmail.com'
 
 app.logger.setLevel(logging.DEBUG)
+mail = Mail(app)
 
 try:
     # Create the users table if it doesn't exist
@@ -389,9 +397,6 @@ def store_data():
             # Fetch the corresponding part details based on your logic
             with sqlite3.connect('spares.db') as connection:
                 cursor = connection.cursor()
-
-                # Modify this query based on your database schema and requirements
-                # Here, I'm assuming you want to fetch the part with the highest ID (latest part)
                 cursor.execute('SELECT * FROM Parts ORDER BY id DESC LIMIT 1')
                 part = cursor.fetchone()
 
@@ -403,17 +408,41 @@ def store_data():
                     ''', (part[0], quantity, email, name, amount, payment_reference))
                     connection.commit()
 
+                    # Send email to the user with purchase information
+                    send_purchase_email(email, name, part, quantity, amount, payment_reference)
+
                     # Return a success response
                     return jsonify({'status': 'success'})
                 else:
-                    # Return an error response if no part is found
                     return jsonify({'status': 'error', 'message': 'No part found'})
     except Exception as e:
-        # Return an error response if an exception occurs
         return jsonify({'status': 'error', 'message': f'Error: {e}'})
 
-    # Return a generic error response if the request method is not POST
     return jsonify({'status': 'error', 'message': 'Invalid request'})
+
+# Function to send purchase confirmation email
+def send_purchase_email(email, name, part, quantity, amount, payment_reference):
+    subject = 'Purchase Confirmation'
+    body = f'''
+    Hello {name},
+
+    Thank you for your purchase!
+
+    Order Details:
+    Part Name: {part[1]}
+    Part Number: {part[2]}
+    Quantity: {quantity}
+    Total Amount: {amount}
+    Payment Reference: {payment_reference}
+
+    If you have any questions, feel free to contact us.
+
+    Regards,
+    FindMySpares.com
+    '''
+
+    msg = Message(subject=subject, recipients=[email], body=body)
+    mail.send(msg)
 
 
 
