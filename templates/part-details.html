@@ -82,6 +82,12 @@
         <p>Description: {{ part[4] }}</p>
         <p>Price: {{ part[8] }}</p>
 
+
+        <div id="confirmationMessage" style="display: none;">
+            <h2>Order Placed Successfully!</h2>
+            <p>Thank you for using FindMySpares.com .Please Check your email address for confirmation.</p>
+        </div>
+
         <form id="paymentForm" action="/store_data" method="post">
             <label for="email">Email:</label>
             <input type="email" id="email" name="email">
@@ -97,9 +103,74 @@
             <!-- Display the total amount dynamically -->
             <p>Total Amount: <span id="totalAmount">{{ part[8] }}</span></p>
 
+            <!-- Option for pickup or doorstep delivery -->
+            <label for="deliveryOption">Delivery Option:</label>
+            <select id="deliveryOption" name="deliveryOption" onchange="toggleAddressFields()">
+                <option value="pickup">Pickup</option>
+                <option value="doorstep">Doorstep Delivery</option>
+            </select>
+
+            <!-- Address fields (hidden by default) -->
+            <div id="addressFields" style="display: none;">
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address">
+
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city">
+
+                <label for="zipCode">Zip Code:</label>
+                <input type="text" id="zipCode" name="zipCode">
+            </div>
+
             <!-- Change the button type to "button" and add an ID -->
-            <button type="button" id="purchaseButton">Purchase</button>
+            <button type="button" id="purchaseButton" onclick="validateAndPurchase()">Purchase</button>
         </form>
+
+        <script>
+            function toggleAddressFields() {
+                var deliveryOption = document.getElementById('deliveryOption').value;
+                var addressFields = document.getElementById('addressFields');
+
+                // Show address fields if doorstep delivery is selected, hide otherwise
+                addressFields.style.display = deliveryOption === 'doorstep' ? 'block' : 'none';
+            }
+
+            function validateAndPurchase() {
+                // Validate other fields if needed
+                var email = document.getElementById('email').value;
+                var name = document.getElementById('name').value;
+                var quantity = document.getElementById('quantity').value;
+
+                // Validate delivery option
+                var deliveryOption = document.getElementById('deliveryOption').value;
+                if (deliveryOption === 'doorstep') {
+                    // Validate address fields if doorstep delivery is selected
+                    var address = document.getElementById('address').value;
+                    var city = document.getElementById('city').value;
+                    var zipCode = document.getElementById('zipCode').value;
+
+                    if (!address || !city || !zipCode) {
+                        alert('Please fill in all address fields for doorstep delivery.');
+                        return;
+                    }
+                }
+
+                // Proceed with the purchase
+                var purchaseButton = document.getElementById('purchaseButton');
+                purchaseButton.disabled = true;
+
+                // Display the confirmation message
+                var confirmationMessage = document.getElementById('confirmationMessage');
+                confirmationMessage.style.display = 'block';
+
+                // Set the payment reference in the confirmation message
+                var paymentReferenceConfirmation = document.getElementById('paymentReferenceConfirmation');
+                paymentReferenceConfirmation.innerText = paymentReference;
+
+                // Continue with the rest of your purchase logic...
+            }
+        </script>
+
     </div>
 
     <script src="https://js.paystack.co/v1/inline.js"></script>
@@ -185,11 +256,23 @@
         function submitBookingDetails() {
     var xhr = new XMLHttpRequest();
     var url = '/store_data';
+
+    // Retrieve delivery option and address details
+    var deliveryOption = document.getElementById('deliveryOption').value;
+    var deliveryAddress = document.getElementById('address').value;
+    var deliveryCity = document.getElementById('city').value;
+    var deliveryZipCode = document.getElementById('zipCode').value;
+
+    // Encode all parameters
     var params = 'email=' + encodeURIComponent(document.getElementById('email').value)
         + '&name=' + encodeURIComponent(document.getElementById('name').value)
         + '&payment_reference=' + encodeURIComponent(paymentReference)
         + '&totalAmount=' + encodeURIComponent(document.getElementById('totalAmount').innerText)
-        + '&quantity=' + encodeURIComponent(document.getElementById('quantity').value);
+        + '&quantity=' + encodeURIComponent(document.getElementById('quantity').value)
+        + '&deliveryOption=' + encodeURIComponent(deliveryOption)
+        + '&deliveryAddress=' + encodeURIComponent(deliveryAddress)
+        + '&deliveryCity=' + encodeURIComponent(deliveryCity)
+        + '&deliveryZipCode=' + encodeURIComponent(deliveryZipCode);
 
     xhr.open('POST', url, true);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');

@@ -72,9 +72,14 @@ try:
         order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         payment_reference TEXT,
         payment_amount INTEGER,
+        delivery_option TEXT,
+        delivery_address TEXT,
+        delivery_city TEXT,
+        delivery_zip_code TEXT,
         FOREIGN KEY (part_id) REFERENCES Parts(id)
     )
 ''')
+
 
 
     connection.commit()
@@ -390,6 +395,12 @@ def store_data():
             amount = request.form.get('totalAmount')
             payment_reference = request.form.get('payment_reference')
 
+            # Retrieve delivery details from the request form
+            delivery_option = request.form.get('deliveryOption')
+            delivery_address = request.form.get('deliveryAddress')
+            delivery_city = request.form.get('deliveryCity')
+            delivery_zip_code = request.form.get('deliveryZipCode')
+
 
 
 # Proceed with Paystack payment
@@ -403,13 +414,15 @@ def store_data():
                 if part:
                     # Insert the order details into the Orders table
                     cursor.execute('''
-                        INSERT INTO Orders (part_id, quantity, customer_email, customer_name, payment_amount, payment_reference)
-                        VALUES (?, ?, ?, ?, ?, ?)
-                    ''', (part[0], quantity, email, name, amount, payment_reference))
+                        INSERT INTO Orders (part_id, quantity, customer_email, customer_name, payment_amount, payment_reference,
+                                           delivery_option, delivery_address, delivery_city, delivery_zip_code)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ''', (part[0], quantity, email, name, amount, payment_reference, delivery_option,
+                          delivery_address, delivery_city, delivery_zip_code))
                     connection.commit()
 
                     # Send email to the user with purchase information
-                    send_purchase_email(email, name, part, quantity, amount, payment_reference)
+                    send_purchase_email(email, name, part, quantity, amount, payment_reference, delivery_option, delivery_address, delivery_city, delivery_zip_code)
 
                     # Return a success response
                     return jsonify({'status': 'success'})
@@ -419,9 +432,8 @@ def store_data():
         return jsonify({'status': 'error', 'message': f'Error: {e}'})
 
     return jsonify({'status': 'error', 'message': 'Invalid request'})
-
 # Function to send purchase confirmation email
-def send_purchase_email(email, name, part, quantity, amount, payment_reference):
+def send_purchase_email(email, name, part, quantity, amount, payment_reference, delivery_option, delivery_address, delivery_city, delivery_zip_code):
     subject = 'Purchase Confirmation'
     body = f'''
     Hello {name},
@@ -434,6 +446,12 @@ def send_purchase_email(email, name, part, quantity, amount, payment_reference):
     Quantity: {quantity}
     Total Amount: {amount}
     Payment Reference: {payment_reference}
+
+    Delivery Information:
+    Delivery Option: {delivery_option}
+    Delivery Address: {delivery_address}
+    Delivery City: {delivery_city}
+    Zip Code: {delivery_zip_code}
 
     If you have any questions, feel free to contact us.
 
