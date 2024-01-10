@@ -231,7 +231,7 @@ def get_orders():
         cursor.execute('''
             SELECT Orders.id, Parts.part_name, Parts.part_number, Parts.part_image, Orders.quantity, Orders.status,
                    Orders.customer_name, Orders.customer_email, Orders.order_date,
-                   Orders.payment_reference, Orders.payment_amount
+                   Orders.payment_reference, Orders.payment_amount,Orders.delivery_option,Orders.delivery_address,Orders.delivery_city,Orders.delivery_zip_code
             FROM Orders
             JOIN Parts ON Orders.part_id = Parts.id
             ORDER BY Orders.order_date DESC
